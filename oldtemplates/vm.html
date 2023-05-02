@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Vinomofo Blackmarket Uncovered{% endblock%}
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+  <div class="container">
+    <a href="{{ url_for('vm') }}" class="navbar-brand">Vinomofo Blackmarket Uncovered</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- <div class="collapse navbar-collapse" id="navmenu">
+      <ul class="navbar-nav" ms-auto>
+        <li class="nav-item">
+          <a href="#learn" class="nav-link">What you'll learn</a>
+        </li>
+        <li class="nav-item">
+          <a href="#questions" class="nav-link">Questions</a>
+        </li>
+        <li class="nav-item">
+          <a href="#instructors" class="nav-link">Instructors</a>
+        </li>
+      </ul>
+    </div> -->
+  </div>
+</nav>
+
+<!-- Search Box -->
+<section class="bg-primary text-light p-5">
+  <div class="container">
+    <div class="d-md-flex justify-content-between align-items-center">
+      <h4 class="mb-3 mb-md-0">Uncover the real name of any Vinomofo Black Market wine deal</h3>
+        <div class="input-group d-lg-flex">
+          <form action="/vm" method="GET">
+            <input type="text" class="col-xl col-form-label" placeholder="Stockcode or URL" name="offer_id">
+            <button class="btn btn-dark col-sm col-form-label">Search</button>
+          </form>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results area -->
+<section class="bg-light text-dark p-5">
+  {% if result and result.get('offer_id') %}
+  <h3>
+    <a href="{{ result.url }}" class="link-primary">Black Market Deal #{{ result.offer_id }}</a>
+  </h3>
+  <dl class="row">
+    <dt class="col-sm-2">Product Name</dt>
+    <dd class="col-sm-9">{{ result.sku_name }}</dd>
+
+    <dt class="col-sm-2">Vintage</dt>
+    <dd class="col-sm-9">{{ result.vintage }}</dd>
+
+    <dt class="col-sm-2">Bottle Size</dt>
+    <dd class="col-sm-9">{{ result.variant }}</dd>
+
+    <dt class="col-sm-2">Price</dt>
+    <dd class="col-sm-9">${{ result.offer_price }} (${{ result.unit_price }} per bottle)</dd>
+
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-9">{{ result.description|striptags }}</dd>
+
+    <dt class="col-sm-2">Links</dt>
+    <dd class="col-sm-9">Find on
+      <a href="https://www.vivino.com/search/wines?q={{ result.name|replace(' ', '+') }}">Vivino</a> and
+      <a
+        href="https://www.cellartracker.com/list.asp?fInStock=0&Table=List&iUserOverride=0&szSearch={{ result.name|replace(' ', '+') }}">CellarTracker</a>
+    </dd>
+  </dl>
+  {% elif result and result.get('error') %}
+  <h3>
+    {{ result.error.message }}
+  </h3>
+  {% else %}
+  <h4>
+    Try searching for an Product ID like 37936 from <em>Shiraz 2017 – Black Market Deal #37936</em> or a URL like
+    https://www.vinomofo.com/wines/white-wine/riesling-2021-black-market-deal-38175
+  </h4>
+  {% endif %}
+
+</section>
+{% endblock %}

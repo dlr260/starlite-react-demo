@@ -1,0 +1,41 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vmapp
+    restart: unless-stopped
+    depends_on:
+      - "mongo"
+    ports:
+      - 8000:8000
+    environment:
+      MONGO_URL: mongodb://${MONGO_USER:-mongouser}:${MONGO_PASSWORD:-secretpassword}@mongo:27017/
+      CORS_HOSTS: "*"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    container_name: vmapp-frontend
+    restart: unless-stopped
+    depends_on:
+      - "backend"
+    ports:
+      - 3000:3000
+    environment:
+      REACT_APP_API_HOST: "${BACKEND_URL:-localhost:8000/api}"
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    container_name: vm-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-mongouser}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secretpassword}
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="valentine">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.38.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    {% if tracker %}
+    <script>
+        var _paq = window._paq = window._paq || [];
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function () {
+            var u = "//{{ tracker }}/";
+            _paq.push(['setTrackerUrl', u + 'matomo.php']);
+            _paq.push(['setSiteId', '1']);
+            var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+            g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
+        })();
+    </script>
+    {% endif %}
+
+    <title>VM Uncovered</title>
+</head>
+
+<body>
+
+    <div class="container mx-auto space-y-2">
+
+        <div class="navbar bg-base-100">
+            <div class="flex-1">
+                <a href="{{ url_for('vm') }}" class="btn btn-neutral normal-case text-xl">VM Uncovered</a>
+            </div>
+            <div class="flex-none gap-2 w-auto">
+                <div class="form-control">
+                    <form action="/vm" method="GET">
+                        <input type="search" placeholder="Search" class="input input-md input-bordered input-neutral"
+                            name="offer_id" />
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-warning shadow-lg">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>{{ error.message }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="card lg:card-side bg-base-200 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title"><a class="link link-hover" href="{{ result.url }}">{{ result.sku_name }}</a></h2>
+                {% if result.wines|length > 1 %}
+                <p>Wines in this pack:
+                <ul class="list-none">
+                    {% for wine in result.wines %}
+                    <li>- {{ wine.name }}</li>
+                    {% endfor %}
+                </ul>
+                </p>
+                {% else %}
+                <p>{{ result.name }}</p>
+                {% endif %}
+                <p>Vintage <span class="font-semibold">{{ result.vintage }}</span></p>
+                <p>Bottle Size <span class="font-semibold">{{ result.variant }}</span></p>
+                <p>Varietal <span class="font-semibold">{{ result.varietal }}</span></p>
+                <p>Region <span class="font-semibold">{{ result.region }}, {{ result.country }}</span></p>
+                <p>Closure <span class="font-semibold">{{ result.closure }}</span></p>
+                <p class="italic">{{ result.summary|striptags }}</p>
+                <p>Find on
+                    <a class="link-secondary"
+                        href="https://www.vivino.com/search/wines?q={{ result.sku_name|replace(' ', '+') }}">Vivino</a>
+                    and
+                    <a class="link-secondary"
+                        href="https://www.cellartracker.com/list.asp?fInStock=0&Table=List&iUserOverride=0&szSearch={{ result.sku_name|replace(' ', '+') }}">CellarTracker</a>
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <div class="card lg:card-side bg-base-200 shadow-xl">
+
+            <div class="card-body">
+                <h2 class="card-title">Vinomofo Uncovered!</h2>
+                <p>Turn <span class="italic">Shiraz 2020 - Black Market Deal #43034</span> into <span
+                        class="italic">Haselgrove Tusail Shiraz 2020</span></p>
+                <p>Take the guesswork out of buying from Vinomofo's "Black Market" wines. </p>
+                <p>Paste the offer id (eg 43034) or product page URL into the search box above to identify the real
+                    product name.</p>
+                <!-- <p>Try 41849</p> -->
+
+            </div>
+        </div>
+        {% endif %}
+
+
+
+    </div>
+
+</body>
+
+</html>
